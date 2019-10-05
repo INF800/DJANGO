@@ -369,4 +369,54 @@ check: `templates/base.html`
     ```
 
 **NOTE:** Always check errors in console and analyze and correct them
- 
+
+# COPY SPECIFIC MARKUPS INTO `index.html` and `about.html` from static files and themes
+
+- dont worry about file not found errors for image assets. They will not come from static files. db will be used
+
+templates/pages/about.html
+```
+{% extends 'base.html' %}
+
+<!--'load' always below 'extends' -->
+{% load static %}
+
+```
+
+- Replace all occurances of 
+```
+<a href="index.html">
+```
+with
+```
+ <a href="{% url 'index' %}">
+```
+
+The url `'index'` comes from `pages/urls.py/` file's `name='index'`
+
+- You can use jinja template for dynamic behaviour
+eg. templates/paartials/_navbar.html
+```
+                  <li 
+                    {% if '/' == request.path %}
+                      class="nav-item active mr-3"
+                    {% else %}
+                      class="nav-item mr-3"
+                    {% endif %}
+                  >
+```
+Here, `{% if '/' == request.path %}` chhecks for homepage
+```
+                  <li 
+                    {% if 'about' in request.path %}
+                      class="nav-item active mr-3"
+                    {% else %}
+                      class="nav-item mr-3"
+                    {% endif %}
+                  >
+```
+Here, `{% if 'about' in request.path %}` checks for about page
+
+
+
+**NOTE:** This is more like realworld. first create ui then apply backend with django. Thats good approach.
