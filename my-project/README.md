@@ -295,3 +295,37 @@ templates/pages/about.html
 ```
 
 **View in browser and verify by viewing sourcecode**
+
+(*Install jinja extension for vs code as well as python extension*)
+
+# Implementing bootstrap theme 
+
+**HANDLING STATIC FILES:** *Confusing. Fpollow along carefully.*
+
+- Goto projname, `djangoproject` folder amd create folder `static`. *This is where we put our main static files*
+
+- put `css` `js` `webfonts` and `img` inn that folder
+
+-  goto `djangoproject/settings.py` (bottom)
+
+``` 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    # location of static folder we just created in djangoproject/
+    os.path.join(BASE_DIR, 'dangoproject/static')
+]
+```
+`STATIC_ROOT`: When you deploy your application, you run command called `collectstatic`. It goest into all your apps and if they have a static folder, it takes everything out and puts it into root `static` folder.
+
+- run `python manage.py collectstatic`: *You will see that  a new `static` folder pops up in rroot dir with nt only the static files we created but inbuilt ones*
+
+**Note:** There is a typo. `dangoapp` instead of djangoapp
+
+Outputs: 
+
+```
+150 static files copied to 'C:\Users\user\Desktop\github\DJANGO\my-project\static'.
+```
+
+- add `/static` to `.gitignore`
