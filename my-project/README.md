@@ -420,3 +420,86 @@ Here, `{% if 'about' in request.path %}` checks for about page
 
 
 **NOTE:** This is more like realworld. first create ui then apply backend with django. Thats good approach.
+
+# Create two more apps 
+1. Listings
+2. Realtors
+
+- In terminal:
+```
+ python manage.py startapp listings
+ python manage.py startapp realators
+``` 
+
+- Add to apps settings.py
+```
+INSTALLED_APPS = [
+    'pages.apps.PagesConfig',
+    'listings.apps.ListingsConfig',
+    'realators.apps.RealatorsConfig',
+]
+```
+*For `listings` we obviously have pages - single listing page, search page etc. But `realtors` is just for model (We are not oing to have any templates/views in it)*
+
+- Add listings templates
+    - create folder `templates/listings`
+    - in that folder:
+    - `listing.html`: For single lsitings
+    - `listings.html`: list of listings
+    - `seach.html`: to search
+
+- As there will be urls to connect to, create `listings/urls.py`
+```
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    # calls index method of listings app view. 
+    # '' corresponds to '/listings`
+    path('', views.index, name='listings'),
+
+    # parameter for single listing eg. 'listings/23'
+    path('<int:listing_id>', views.listing, name='about'),
+
+    # search. 
+    # url must be 'listings/search'
+    # note: we didn't add 'listings' in path url below 'search' 
+    # as we will be doing it in main urls.py by linking to it. 
+    path('search', views.search, name='search'),
+]
+```
+
+- link to main `urls.py` same as pages app
+```
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/', include('listings.urls')),
+    path('admin/', admin.site.urls),
+]
+```
+
+Note: How `listings/` is used in main url instead of using in listings app 
+
+- Create view methods in `lsitings/views.py`
+```
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'listings/listings.html')
+
+def listing(request):
+    return render(request, 'listings/listing.html')
+
+def search(request):
+    return render(request, 'listings/search.html')
+```
+
+*for now, put `<h1>listings<h1>` in all 3 templates then try visiting in browser at `127.0.0.1/listings/`*
+
+- extend base.html
+- copy static files into templates
+- images wont be displayed as we will be displaying it when admin uploads it
