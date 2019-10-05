@@ -329,3 +329,44 @@ Outputs:
 ```
 
 - add `/static` to `.gitignore`
+
+# Load bootstrap
+
+- In head, we include our static files. Take it from themes folder and paste in `templates/base.html`
+
+- Javascript files may be there in our theme jus above ending of body tag, copythem aswell.
+
+- correct the src href addresses for static files
+
+check: `templates/base.html`
+```
+{% load static %}
+<!DOCTYPE html>
+.
+.
+.
+<link ... href="{% static 'css/all.css' %}">
+.
+.
+.
+```
+
+- add headers, footers and navbars from theme
+    - Add `templates/partials` folder to put all these imported html code so that `base.html` is not cluttered.
+    - Syntax (folder):
+    ```
+    templates/
+        partitals/
+            _navbar.html
+            _topbar.html
+            _footer.html
+        base.html
+    ```
+    Simply cut paste in respective partial html files and call them in `base.html` using template syntax
+    ```
+    <!-- Top Bar-->
+    {% include 'partials/_topbar.html' %}
+    ```
+
+**NOTE:** Always check errors in console and analyze and correct them
+ 
