@@ -254,3 +254,44 @@ def about(request):
 `render()` takes request self as one argument and template as another.
 
 **CHECK OUTPUT IN BROWSER**
+
+# Extend a BASE layout so that scripts and stylesheets dont gahve to be put for each template separately (Not SPA)
+
+- create `base.html` inside `templates/`:  (! + tab for boilerplate code)
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    {% block content %} {% endblock %}
+</body>
+</html>
+```
+Jinja syntax is used
+
+- to use `base.html` in `index.html` and `about.html`:
+
+templates/pages/index.html:
+```
+{% extends 'base.html' %}
+
+{% block content %}
+<H1>HOME</H1>
+{% endblock %}
+```
+templates/pages/about.html
+```
+{% extends 'base.html' %}
+
+{% block content %}
+<H1>ABOUT</H1>
+{% endblock %}
+```
+
+**View in browser and verify by viewing sourcecode**
