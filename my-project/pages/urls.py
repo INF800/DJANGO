@@ -10,4 +10,5 @@ from . import views
 # name='index' helps associatre name to the path
 urlpatterns = [
     path('', views.index, name='index'),
+    path('about', views.about, name='about'),
 ]

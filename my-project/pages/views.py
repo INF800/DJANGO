@@ -6,4 +6,7 @@ from django.http import HttpResponse
 
 # index view (called by urls)
 def index(request):
-    return HttpResponse('<h1>Heloo </h1>')
+    return render(request, 'pages/index.html')
+
+def about(request):
+    return render(request, 'pages/about.html')

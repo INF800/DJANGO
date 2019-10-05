@@ -191,4 +191,66 @@ Check browser for output.
 *(Install pylint in venv like autopep8 to avoid import errors)*
 
 
-# Serving html instead of returning simple `Httpresponse`
+# Serving html TEMPLATE instead of returning simple `HttpResponse`
+
+- Steps to be followed
+
+- tell django where to look for templates (folder). Goto `djangoapp/settings.py`
+
+```
+TEMPLATES = 
+...
+'DIRS' = [os.path.join(BASE_DIR, 'templates')]
+...
+
+```
+
+- create `templates` folder in root for of project *you can organize files in the folder in whichever way you want*
+
+- [ ME ]create `pages` folder for all templates for that app. inside, i.`index.html` ii.`about.html`
+
+templates/pages/index.html
+```
+<H1> HOME </H1>
+```
+templates/pages/about.html
+```
+<H1>ABOUT</H1>
+```
+
+- As templates are created, add path for `about` in `pages/urls.py`
+```
+# just like urls.py in projname folder. For 'path'
+from django.urls import path
+
+# import views to bind to
+from . import views
+
+# as in urls.py in projname folder
+# '' meaans index unlike '/' in flask
+# access view func from views.py
+# name='index' helps associatre name to the path
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('about', views.about, name='about'),
+]
+```
+- add about in `pages/views.py` and replace `HttpResponse` with `render`
+```
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+# index view (called by urls)
+def index(request):
+    return render(request, 'pages/index.html')
+
+def about(request):
+    return render(request, 'pages/about.html;')
+```
+
+`render()` takes request self as one argument and template as another.
+
+**CHECK OUTPUT IN BROWSER**
