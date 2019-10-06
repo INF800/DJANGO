@@ -503,3 +503,103 @@ def search(request):
 - extend base.html
 - copy static files into templates
 - images wont be displayed as we will be displaying it when admin uploads it
+
+
+# PostgreSQL Installation
+
+- very powerful rdb
+- pairs very well with djano
+-no raw sql queries. High level ORM availsble
+
+> postgresql.org -> download -> windows -> graphical installer by bigsql
+
+> Mac: Use postgresapp.com
+
+> pgadmin: gives gui (available at pgadmin.org for win + mac
+
+- install with gui installer
+- double click on `postgres` open a terminal window
+- Post gres comes with def user `postgres`. We will use it in development but not deployment
+    
+    ```
+    //add psql to envt vars
+
+    >> psql -U postgres
+    
+    output: postgres=#
+    ```
+    - set password for `postgres` user
+    ```
+    \password postgres
+    ```
+    - Create db
+    ```
+    CREATE DATABASE dangoproject OWNER postgres;
+    ```
+    - list databases to see the created db
+    ```
+    \l
+    ```
+- you can use pgadmin agui to do above steps as well
+
+
+- pgadmin
+    - install and open
+    - below left side pannel 'browser1, left click `servers`, `create`, `new...` 
+    ```
+    name: dbserver
+
+    connection ->
+    Host: localhhost
+    maintenance db: postgres
+    Username: postgres
+    password: postgres
+
+    save->
+    ```
+    - goto: servers -> dbserver -> Databases -> dangoproject(leftclick) -> properties -> security -> privilleges -> add grantee: postgres, select all
+
+    **All set and configured**
+
+# Django-Postgres setup
+
+- install pip packages and define `settings.py`
+    - in venv
+    ```
+    pip install psycopg2
+    pip install psycopg2-binary
+    ```
+    dangoapp/seetings.py
+    ```
+    # Database
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            # name of db we created
+            'NAME': 'dangoproject',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost'
+        }
+    }
+
+    ```
+
+    ***migration is a file that tells db what to do**. Basicall setting up tables, data, cols, datatypes etc.. Django has def migrations for things like admin area for authentication. All those migrartion files have been set up but havent been run and put into thedb. Hence the migration errors while running startup. Lets add those migrations to db...*
+
+    - Run migrations that are already ready:
+    ```
+    python manage.py migrate
+    ``` 
+    Outsputs error if any error in our db setup.
+
+    - You can see the created tables by migration in pgadmin
+    > severs->dbserver->Databases->dangoapp->Schemas->public->Tables
+
+    - run there sever
+    ```
+    python manage.py runserver
+    ```
+    *You wont be able to see all those migration errors you saw previously. We are in a great place now. We can actually create models!*
+
