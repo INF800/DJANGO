@@ -786,3 +786,4 @@ class Realator(models.Model):
     ```
     Take look in schemas->table in pgadmin to see changes.
     *You can view or edit tables by left clicking on it and selecting `View/Edt Data`*
+    
