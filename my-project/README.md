@@ -677,3 +677,112 @@ message: TEXT
 contact_date: DATE
 
 ```
+
+# CREATE MODELS AND UPDATE DB
+
+- i. Create listings model
+- ii. Create realators model
+- iii. Run migration that will create tables in our db based on our models
+
+*check django docs for all model feild types https://docs.djangoproject.com/en/2.2/ref/models/fields/*
+
+
+***Note:** Use email field if available instead of ussing str feild and reinventing the wheel*
+
+- Creating listings model:
+
+listings/models.py
+```
+from django.db import models
+from datetime import datetime
+
+#we can access any APP by just using it's name
+from realators.models import Realator
+
+# Create your models here.
+
+class Listings(models.Model):
+    # hardest one
+    # feild = models.ForeignKey(other-model-we-are-relating, on_delete=)
+    # If you have realator attached to a listing, and you delete realator, should the listing delete too? In some cases we want it to. Here, Not needed
+    realator = models.ForeignKey(Realator, on_delete=models.DO_NOTHING)
+    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zipcode = models.CharField(max_length=20)
+    description = models.TextField(blank=True) #blank=True mean it is optional. Same as 'Required' tag
+    price = models.IntgerField()
+    bedrooms = models.IntgerField()
+    bathrooms = models.DecimalFeild(max_didgts=2, decimal_places=1)
+    garage = models.IntgerField(default=0)
+    sqft = models.IntgerField()
+    lot_size = models.DecimalFeild(max_digits=5, decimal_places=1)
+    # note: we are using actual images her, but in db itself, images will be stored as strings
+    # photo_main = models.ImageFeild( define-where-to-upload-images-to-inside-MEDIA-FOLDER )
+    # use string ormater to upload images neatly as per dates 
+    photo_main = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/')
+    photo_1 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    photo_2 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    photo_3 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    photo_4 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    photo_5 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    photo_6 = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/', blank=True)
+    is_published = models.BooleanFeild(default=True)
+    list_date = models.DateTimeFeild(default=datetime.now, blank=True)
+
+    # In admin area, we will have a table that diplays each listing. And we need
+    # to pick main feild to be displayed there. "Tile" can be selected as main feild to display.
+    def __str__():
+        return self.title
+```
+- creating Realators model. It has to go hand in hand with previous model we created.
+    - realators foreign key in listings model must linked
+    - imports should match
+
+realators/models.py
+```
+from django.db import models
+from datetime import datetime
+
+# Create your models here.
+
+class Realator(models.Model):
+    name = models.CharField(max_length=200)
+    photo = models.ImageFeild(upload_to='photos/%Y/%m/%m/%d/')
+    description = models.TextField(blank=True)
+    phone = models.CharField(max_length=20)
+    email = models.CharField(max_length=20)
+    is_mvp = models.BooleanField(default=False)
+    hire_date = models.DateTimeFeild(default=datetime.now, blank=True)
+    def __str__():
+        return self.nmae
+```
+
+- Now, we want this to get into our db. *Just because we created models, it doesnt mean tables will be created itself*
+    - create migrations
+    ```
+    python manage.py makemigrations
+    ```
+    `makemigrations` create a file which should be run to update db. It itself doesnt act on db
+
+    *Note:* In apps folders, `migrations` folders should be already present
+
+    If any erors, typos, install the dependancies.. solve them
+    ```
+    pip install Pillow
+    ```
+    when `makemigrations` get executed successfully, it creates `migrations\0001_initial.py` in all APPS. *This file basically contais all the info from our models which will be updated in db*
+
+    We can actually know what sql quieries will be used using command:
+    ```
+    // syntax: python manage.py sqlmigrate appname NUMoFfile
+    python manage.py sqlmigrate listings 0001
+    ```
+    *This command simply shows us queries. Dont implement it. You can see only if you want to*
+
+    - run migration
+    ```
+    python manage.py migrate
+    ```
+    Take look in schemas->table in pgadmin to see changes.
+    *You can view or edit tables by left clicking on it and selecting `View/Edt Data`*
