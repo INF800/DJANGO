@@ -603,3 +603,77 @@ def search(request):
     ```
     *You wont be able to see all those migration errors you saw previously. We are in a great place now. We can actually create models!*
 
+
+# Plan the schema before stating model creation
+
+- It is always a good practice to map out db schema before we start coding
+- Figure it out through project requirements
+```
+--->MODEL/DB FEILDS
+
+### LISTING
+
+-->feilds
+
+id: INT     
+(every TABLE has it. Automated in postgres)
+
+realator INT (FOREIGN KEY [realator])    
+(everly listing will have a realator. Hence assign a group of listings to a arealator. we can do it using: `realator-feild INT (FOREIGN KEY [realator-model])`)
+
+title: STR
+address: STR
+city: STR
+state: STR
+zipcode: STR
+description: TEXT (Longer than STR)
+price: int (rounding houses price. Not doing cents!)
+bedrooms: INT
+bathrooms: INT
+garage: INT [0] (default zero)
+sqft: INT
+lot_size: FLOAT (Acres hence float)
+is_published: BOOL [true] (by default, published)
+list_date: DATE
+
+phot_main: STR (One main imaage. WE ARE NOT STORING IMAGES, RATHER LOCATION OF IMAGE)
+
+photo_1: STR
+photo_2: STR
+photo_3: STR
+photo_4: STR
+photo_5: STR
+photo_6: STR
+
+
+
+### REALATORS
+
+-->feilds
+
+id: INT
+name: STR
+photo: STR
+descripttion: TEXT
+email: STR
+phone: STR
+is_mvp: BOOL [0] (Realator of the month)
+hire_date: DATE
+
+
+
+### CONTACT (for storing enquiries)
+
+--> Feilds
+
+id: INT
+user_id: INT (to know which user enquired)
+listing: INT (connected to tiltle/name of listing)
+listing_id: INT
+name: STR
+email: STR
+phone: STR
+message: TEXT
+contact_date: DATE
+
+```
