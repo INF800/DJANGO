@@ -786,4 +786,63 @@ class Realator(models.Model):
     ```
     Take look in schemas->table in pgadmin to see changes.
     *You can view or edit tables by left clicking on it and selecting `View/Edt Data`*
-    
+
+# Work on admin area - Add Listings and Realators block
+
+- One the greatest features of django esp. free lancer
+- allows us to customize admin-area the way you want
+- check admin login page at
+```
+127.0.0.1/8000/admin
+```
+*It has been there all along*
+
+- We currently dont have a way to login. So, what we will do is..
+    - create superuser
+    ```
+    python manage.py help
+    ```
+    ```
+    python manage.py createsuperuser
+    ```
+    Create username and password. Now you can login.
+    > rakesh4real Momanddad0!
+    > postgres postgres
+    > root root
+
+- django by default lets admins create groups and manage users
+- `staff status` user is admin and can login to admin area
+- Obviously, now we should be able to add listings and realators and stuff like that
+    - Goto: `listings/admin.py` You can customize admin stuff for listings app here.
+    - Add Listings to admin areal by registering listing for admin area
+
+    listings/admin.py
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Listings
+
+    admin.site.register(Listings)
+    ```
+    *Reload the admin area in browser and you will see `LISTINGS` block added*
+
+    NOTE: We will see 'Listingss' with double `s` because we created object with name `Listings` instead of `Listing`
+
+    - You can now **easily** add all new listings using `ADD LISTINGS` option in admin area in browser!! **This is such an amazing functionality to have right out of the box. Could have taken days to develop this page. Django is an incredible framework. Esp, for freeleancers**
+
+    - Add Realators as well
+
+    realators/admin.py
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Realator
+
+    admin.site.register(Realator)
+    ```
+- You can add data now with GUI
+- We can obviously customize admin area UI and colors before giving it to customer
