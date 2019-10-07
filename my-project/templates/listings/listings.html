@@ -89,23 +89,53 @@
     
           <div class="row">
             <div class="col-md-12">
-              <ul class="pagination">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#">&laquo;</a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">&raquo;</a>
-                </li>
-              </ul>
+              <!-- display 'next page' or 'prev page' only IF other pages are availabe -->
+              {% if listings.has_other_pages %}
+                <ul class="pagination">
+                  
+                  {% if listings.has_previous %}
+                    <!-- try: li.page-item + enter -->
+                    <li class="page-item">
+                      <!-- try: a.page-link + enter | &laquo; is for '<<<' -->
+                      <a href="?page={{listings.previous_page_number}}" class="page-link">&laquo;</a>
+                    </li>
+                  {% else %}
+                    <!-- try: li.page-item.diasbled + enter -->
+                    <li class="page-item diasbled">
+                      <!-- no need for href as there are no prev pages -->
+                      <!-- It is like 'disabled' arrow link -->
+                      <a class="page-link">&laquo;</a>
+                    </li>
+                  {% endif %}
+                  <!-- now, loop through our page range. All of this is in docs -->
+                  
+                  {% for i in listings.paginator.page_range %}
+                    {% if listings.number == i %}
+                      <li class="page-item active">
+                        <!-- This is the active page. Hence, no href. But we put index num -->
+                        <a class="page-link">{{i}}</a>
+                      </li>
+                    {% else %}
+                      <!-- 'active' isnt added to class as this wont be for current page -->
+                      <li class="page-item">
+                        <a href="?page={{i}}" class="page-link">{{i}}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+
+                  <!-- adding 'next>>>' Do same as we did for '<<<prev' above -->
+                  {% if listings.has_next %}
+                  <li class="page-item">
+                    <a href="?page={{listings.next_page_number}}" class="page-link">&raquo;</a>
+                  </li>
+                {% else %}
+                  <li class="page-item diasbled">
+                    <a class="page-link">&raquo;</a>
+                  </li>
+                {% endif %}
+
+                </ul>
+              {% endif %}
             </div>
           </div>
         </div>

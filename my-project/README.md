@@ -1310,4 +1310,212 @@ Realators/models.py/Realator
         return render(request, 'listings/listing.html')
     ```
 
+# Front End - Pagination, Order, Filter on Displayed Listings
+
+- Pagination
+    - Pagination is pretty hard. But django maakes it EASY
+    - see `using-paginator-in-a-view` in docs https://docs.djangoproject.com/en/2.2/topics/pagination/#using-paginator-in-a-view
+    - We have to add a `paginator ` as `Paginator(listings-objects-collection, nums-per-page)`
+    - get page from `get` request. Because, if youn are in page 2 you are hgoing to have a url parameter that says page 2 and so.
+    - Pass the request into `paginator.get_page()`
+    - Innstead oof passing `listings` into context pass `paged_listings` as shown below
     
+    *We are going to do this for listings page...*
+
+    listings/views.py
+    ```
+    from django.shortcuts import render
+
+    #import Paginator
+    from django.core.paginator import Paginator
+
+    # import listing model for fetching
+    from .models import Listings
+
+    def index(request):
+        # This will fetch all listings without any raw sql queries
+        listings = Listings.objects.all()
+
+        # right underneath listings objects', do as said in docs
+        paginator = Paginator(listings, 3) # Show 25 contacts per page
+        page = request.GET.get('page') # `page` is the url param we are looking for
+        paged_listings = paginator.get_page(page) # pass this into context instead of `listings`
+
+        context = {
+            'listings': paged_listings
+        }
+
+        return render(request, 'listings/listings.html', context)
+
+    def listing(request, listing_id):
+        return render(request, 'listings/listing.html')
+
+    def search(request):
+        return render(request, 'listings/search.html')
+    ```
+
+    Note
+    ```
+    #import Paginator
+    from django.core.paginator import Paginator
+    ```
+    and
+    ```
+    # right underneath listings objects' collection, do as said in docs
+    paginator = Paginator(listings, 3) # Show 25 contacts per page
+    page = request.GET.get('page') # `page` is the url param we are looking for
+    paged_listings = paginator.get_page(page) # pass this into context instead of `listings`
+
+    context = {
+        'listings': paged_listings #instead of `listings` directly. Same code for display data + pagination 
+    }
+
+    ```
+
+    **Not done yet!** We have to display it the right way... If you check in browser, page 1 will work but page 2 wont.
+
+    see docs.. they are using `contacts` and we are using `listings`. 
+
+    - we can simply copy paste it from doc, but for better ui we'll use bootstrap 4.1 (*aLrready in our static files*)
+    ```
+    <ul class="pagination">
+                    <li class="page-item disabled">
+                    <a class="page-link" href="#">&laquo;</a>
+                    </li>
+                    <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="#">&raquo;</a>
+                    </li>
+    </ul>
+    ```
+
+    In template/listings/listings.html
+    ```
+    <!-- display 'next page' or 'prev page' only IF other pages are availabe -->
+    {% if listings.has_other_pages %}
+    <ul class="pagination">
+        {% if listings.has_previous %}
+        <!-- try: li.page-item + enter -->
+        <li class="page-item">
+            <!-- try: a.page-link + enter | &laquo; is for '<<<' -->
+            <a href="?page={{listings.previous_page_number}}" class="page-link">&laquo;</a>
+        </li>
+        {% else %}
+        <!-- try: li.page-item.diasbled + enter -->
+        <li class="page-item diasbled">
+            <!-- no need for href as there are no prev pages -->
+            <!-- It is like 'disabled' arrow link -->
+            <a class="page-link">&laquo;</a>
+        </li>
+        {% endif %}
+        <!-- now, loop through our page range. All of this is in docs -->
+        {% for i in listings.paginator.page_range %}
+        {% if listings.number == i %}
+            <li class="page-item active">
+            <!-- This is the active page. Hence, no href. But we put index num -->
+            <a class="page-link">{{i}}</a>
+            </li>
+        {% else %}
+            <!-- 'active' isnt added to class as this wont be for current page -->
+            <li class="page-item">
+            <a href="?page={{i}}" class="page-link">{{i}}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+    ```
+    Working perfectly!
+
+    - add next
+    ```
+    <!-- display 'next page' or 'prev page' only IF other pages are availabe -->
+    {% if listings.has_other_pages %}
+    <ul class="pagination">
+        
+        {% if listings.has_previous %}
+        <!-- try: li.page-item + enter -->
+        <li class="page-item">
+            <!-- try: a.page-link + enter | &laquo; is for '<<<' -->
+            <a href="?page={{listings.previous_page_number}}" class="page-link">&laquo;</a>
+        </li>
+        {% else %}
+        <!-- try: li.page-item.diasbled + enter -->
+        <li class="page-item diasbled">
+            <!-- no need for href as there are no prev pages -->
+            <!-- It is like 'disabled' arrow link -->
+            <a class="page-link">&laquo;</a>
+        </li>
+        {% endif %}
+        <!-- now, loop through our page range. All of this is in docs -->
+        
+        {% for i in listings.paginator.page_range %}
+        {% if listings.number == i %}
+            <li class="page-item active">
+            <!-- This is the active page. Hence, no href. But we put index num -->
+            <a class="page-link">{{i}}</a>
+            </li>
+        {% else %}
+            <!-- 'active' isnt added to class as this wont be for current page -->
+            <li class="page-item">
+            <a href="?page={{i}}" class="page-link">{{i}}</a>
+            </li>
+        {% endif %}
+        {% endfor %}
+
+        <!-- adding 'next>>>' Do same as we did for '<<<prev' above -->
+        {% if listings.has_next %}
+        <li class="page-item">
+        <a href="?page={{listings.next_page_number}}" class="page-link">&raquo;</a>
+        </li>
+    {% else %}
+        <li class="page-item diasbled">
+        <a class="page-link">&raquo;</a>
+        </li>
+    {% endif %}
+
+    </ul>
+    {% endif %}
+    ```
+    **Now everything is set.**
+
+    Replace `paginator = Paginator(listings, 3)` with `paginator = Paginator(listings, 6)` in listings/view.py as testing has been completed. Note that whole thing disappears as 6 items fill single page.
+
+    - There is one small catch. You have `ORDER` lsitings display 
+    - use `.order_by()` for that while geting data from db
+    
+    listings/views.py:
+
+    use
+    ```
+    # minus in '-list_date' is for descending order
+    listings = Listings.objects.order_by('-list_date')
+    ```
+    instead of
+    ```
+    listings = Listings.objects.all()
+    ```
+
+    - Another catch
+    - If we uncheck `is_published` from adimn area, that item will still be displayed in listings page
+    - Filter it using `.filter()`
+
+    listings/views.py:
+
+    use
+    ```
+    listings = Listings.objects.order_by('-list_date').filter(is_published=True)
+    ```
+    instead of
+    ```
+    listings = Listings.objects.order_by('-list_date')
+    ```
+    ***Test it by unchecking in admin area***
