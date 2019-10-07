@@ -1,0 +1,39 @@
+/* Use element inspector to find these values. Copy paste those values and override */
+
+#header {
+    height: 50px;
+    background: #10284e;
+    color: #fff
+}
+
+#branding h1 {
+    color: #fff;
+}
+
+/* Overriding link color when clicked */
+a:link,
+a:visited {
+    color: #10284e;
+}
+
+div.breadcrumbs {
+    background: #30caa0;
+    color: #10284e;
+}
+
+/* Overriding link color */
+div.breadcrumbs a {
+    color: #333;
+}
+
+/* Override caption tags in admin area home */
+/* feel fre to copy pate from inspector */
+.module h2, .module caption, .inline-group h2 {
+    background: #30caa0;
+}
+
+/* override submit buttons in add listings */
+.button, input[type="submit"], input[type="button"], .submit-row input, a.button {
+    background: #10284e;
+    color: #fff;
+}

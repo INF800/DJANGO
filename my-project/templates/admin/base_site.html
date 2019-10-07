@@ -1,0 +1,19 @@
+
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block branding %}
+
+<!-- We are altering admin/base.html's head-->
+<h1 id="head">
+    <!-- try: img.classname i.e img.brand_img + enter -->
+    <img src="{% static 'img/logo.png' %}" alt="Company Name" height="50" width="80" class="brand_img">
+    Admin Area
+</h1>
+
+{% endblock %}
+
+{% block extrastyle %}
+    <!-- Try: link + enter -->
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}

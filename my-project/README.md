@@ -901,3 +901,111 @@ Realators/models.py/Realator
 **MOMENT OF APPRECIATION:** If you were to upload all this by code, it would have taken a lot of time. Django makes it easy. Esp, admin area. Note there is an add button already ppresent intutively in `Listings` section. This is awesome.
 
 # Work on admin area - Customisation
+
+*add some more feilds to this tables adding such mores stuff*
+
+- Add logo and change theme colors
+    - In `templates` folder, create folder `admin`, inside that create `base_site.html` (Naming must be exact)
+
+    templates/admin/base_site.html
+    ```
+    {% extends 'admin/base.html' %}
+    {% load static %}
+
+    {% block branding %}
+
+    <!-- We are altering admin/base.html's head-->
+    <h1 id="head">
+        My Real Estate
+    </h1>
+
+    {% endblock %}
+    ```
+    *Now you can see admin area in the browser that `Django Adminstration` has been replaced with `My Real Estate`*
+
+    - But we need to change to logo so ...
+
+    templates/admin/base_site.html
+    ```
+    {% extends 'admin/base.html' %}
+    {% load static %}
+
+    {% block branding %}
+
+    <!-- We are altering admin/base.html's head-->
+    <h1 id="head">
+        <!-- try img.classname i.e img.brand_img + enter -->
+        <img src="{% static 'img/logo.png' %}" alt="Company Name" height="50" width="80" class="brand_img">
+        Admin Area
+    </h1>
+
+    {% endblock %}
+    ```
+
+    - To edit css, you have to add another block
+    ```
+    {% extends 'admin/base.html' %}
+    {% load static %}
+
+    {% block branding %}
+
+    <!-- We are altering admin/base.html's head-->
+    <h1 id="head">
+        <!-- try: img.classname i.e img.brand_img + enter -->
+        <img src="{% static 'img/logo.png' %}" alt="Company Name" height="50" width="80" class="brand_img">
+        Admin Area
+    </h1>
+
+    {% endblock %}
+
+    {% block extrastyle %}
+        <!-- Try: link + enter -->
+        <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    {% endblock %}
+    ```
+
+    - We have to add `css/admin.css`. Goto: `dangoapp/static/css/` and create `admin.css`. *Use Inspector to know which class and css elements to edit. And override them.* 
+
+    admin.css
+    ```
+    /* Use element inspector to find these values. Copy paste those values and override */
+
+    #header {
+        height: 50px;
+        background: #10284e;
+        color: #fff
+    }
+
+    #branding h1 {
+        color: #fff;
+    }
+
+    /* Overriding link color when clicked */
+    a:link,
+    a:visited {
+        color: #10284e;
+    }
+
+    div.breadcrumbs {
+        background: #30caa0;
+        color: #10284e;
+    }
+
+    /* Overriding link color */
+    div.breadcrumbs a {
+        color: #333;
+    }
+
+    /* Override caption tags in admin area home */
+    /* feel fre to copy pate from inspector */
+    .module h2, .module caption, .inline-group h2 {
+        background: #30caa0;
+    }
+
+    /* override submit buttons in add listings */
+    .button, input[type="submit"], input[type="button"], .submit-row input, a.button {
+        background: #10284e;
+        color: #fff;
+    }
+    ```
+
