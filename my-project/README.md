@@ -1009,3 +1009,124 @@ Realators/models.py/Realator
     }
     ```
 
+- Customize Admin display data
+
+    1. `list_display` : data to displat
+    2. `list_display_links` : clickable to display data page
+    3. `list_filter` : filter by
+    4. `list_editable` : edit data without going inside by clicking
+    5. `search_fields` : search
+    6. `list_per_page` : pagination
+
+
+
+    - Goto: `listings/admin.py`
+    - create `ListingAdmin` class above `admin.site.register()`
+    - pass `LisingAdmin` class to `admin.site.register()`
+    - add all the field you wanna display instead of simply displaying `title` in `list_display`
+
+    listings/admin.py:
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Listings
+
+    class ListingAdmin(admin.ModelAdmin):
+        list_display = ('id', 'title', 'is_published', 'price', 'list_date', 'realator')
+
+    admin.site.register(Listings, ListingAdmin)
+    ```
+    
+    - **Note:** When you click on displayed `title`, you cant get into page. But instead you can get into it by clicking on dispplayed `id`. Because it is the first one. To get inside by clicking on `title` as well, 
+    - add `list_display_links`
+
+    listings/admin.py:
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Listings
+
+    class ListingAdmin(admin.ModelAdmin):
+        list_display = ('id', 'title', 'is_published', 'price', 'list_date', 'realator')
+        list_display_links = ('id', 'title')
+
+    admin.site.register(Listings, ListingAdmin)
+    ```
+    *You can make any of them to display page when clicked upon*
+
+    - Filter/Order by `realator` or any of the displayed data. (This functinality is already present in django). 
+    - Use `list_filter`
+
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Listings
+
+    class ListingAdmin(admin.ModelAdmin):
+        list_display = ('id', 'title', 'is_published', 'price', 'list_date', 'realator')
+        list_display_links = ('id', 'title')
+
+        # when you have single value inside parentheses like this, put coma in end else we get error
+        list_filter = ('realator',)
+
+    admin.site.register(Listings, ListingAdmin)
+    ```
+    *Note, we have additional block dispayed for filter by in browser. You can do this for any field you want.*
+
+    - Click on display data i.e `is_published` to change it's value wiyhout going in
+    - use `list_editable
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Listings
+
+    class ListingAdmin(admin.ModelAdmin):
+        list_display = ('id', 'title', 'is_published', 'price', 'list_date', 'realator')
+        list_display_links = ('id', 'title')
+        # when you have single value inside parentheses like this, put coma in end else we get error
+        list_filter = ('realator',)
+        list_editable= ('is_published', 'realator')
+
+    admin.site.register(Listings, ListingAdmin)
+    ```
+    *Note, you have to click on `save` button at bottom right after editing*
+
+    - To search by certain feilds, use `search_fields` in `ListingAdmin` class
+    ```
+    search_fields = ('title', 'description', 'city', 'address', 'price')
+    ```
+    *note, search bar will popup in page on reload. We have these extra methods we can add that make our life a lot easier. We never have to go into django admin code*
+
+    - By default, it will keep going to display listings in dispaly area. Put listings per page i.e **pagination** using `list_per_page` in `ListingAdmin` class
+    ```
+    list_per_page = 25
+    ```
+
+    - lets do the same for Realators as well
+
+    realators/admin.py:
+    ```
+    from django.contrib import admin
+
+    # Register your models here.
+
+    from .models import Realator
+
+    class RealatorAdmin(admin.ModelAdmin):
+        list_display = ('id', 'name', 'email', 'hire_date')
+        list_display_links = ('id', 'name')
+        search_fields = ('name',)
+        list_per_page = 25
+
+
+    admin.site.register(Realator, RealatorAdmin)
+    ```
+
