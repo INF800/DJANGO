@@ -1519,3 +1519,159 @@ Realators/models.py/Realator
     listings = Listings.objects.order_by('-list_date')
     ```
     ***Test it by unchecking in admin area***
+
+# Front End - Home and About page dynamic content
+
+- Before we move to single listings and all,
+- Make home page and about page dynameic cz theyre just markup
+- lets do home page first
+    - we have to display latest 3 listings
+    - we will do same as listings page but display only 3 that too with pagination
+
+    note
+    ```
+    #import listings model
+    from listings.models import Listings
+    ```
+    and
+    ```
+    # [:3] allows fetches only 3 listings from db
+    listings = Listings.objects.order_by('-list_date').filter(is_published=True)[:3]
+    context = {
+        'listings': listings
+    }
+
+    return render(request, 'pages/index.html', context)
+    ```
+    in
+
+    pages/views.py
+    ```
+    from django.shortcuts import render
+    from django.http import HttpResponse
+
+    #import listings model
+    from listings.models import Listings
+
+    # index view (called by urls)
+    def index(request):
+        
+        # [:3] allows fetches only 3 listings from db
+        listings = Listings.objects.order_by('-list_date').filter(is_published=True)[:3]
+        context = {
+            'listings': listings
+        }
+
+        return render(request, 'pages/index.html', context)
+
+    def about(request):
+        return render(request, 'pages/about.html')
+    ```
+
+    Now, we have to load it in our template. Simply access it using `{{ }}`
+
+    template/pages/index.html
+    ```
+        {% if listings %}
+            {% for listing in listings %}
+                .
+                .
+                <!-- Listing i -->
+                .
+                .
+
+            {% endfor %}
+        {% else %}
+            <!-- 12 col div -->
+            <div class="col-md-12">
+                <p>No listings available</p>
+            </div>
+        {% endif %}
+    ```
+
+    Note: 
+
+        a. for using humainize, add it into app, load it in template
+        b. for href url, use {% %} instead of {{ }} 
+        c. for image src url, you can use {{ }} 
+
+- Home page done. Do the same for `realators` in about page
+
+    note 
+    ```
+    #import realators nodel
+    from realators.models import Realator
+    ```
+    and
+    ```
+    def about(request):
+        # Get all realators
+        realators = Realator.objects.order_by('-hire_date')
+
+        # Get MVP i.e seller(s) of the month
+        mvp_realators = Realator.objects.all().filter(is_mvp=True)
+
+        context = {
+            'realators': realators,
+            'mvp_realators': mvp_realators
+        }
+
+        return render(request, 'pages/about.html', context)
+    ```
+    in
+
+    pages/views.py:
+    ```
+    def about(request):
+        # Get all realators
+        realators = Realator.objects.order_by('-hire_date')
+
+        # Get MVP i.e seller(s) of the month
+        mvp_realators = Realator.objects.all().filter(is_mvp=True)
+
+        context = {
+            'realators': realators,
+            'mvp_realators': mvp_realators
+        }
+
+        return render(request, 'pages/about.html', context)
+    ```
+
+    *note, we have sellers(s) of the month as well here*
+
+    - load it in template
+
+    templates/pages/about.html
+    ```
+    {% if realators %}
+        {% for realator in realators %}
+        .
+        .
+        <!-- Realator i -->
+        .
+        .
+        {% endfor %}
+    {% else %}
+        <div class="col-md-12">
+        <p>
+            No Realtos Available
+        </p>
+        </div>
+    {% endif %}
+    ```
+
+    - For mvp
+    ```
+    <!-- display if seller of the month is present -->
+    <!-- Note, there is no else statement as we wont display anything if !mvp -->
+    
+    {% if mvp_realators %}
+        {% for realator in mvp_realators %}
+            .
+            .
+            <!-- realator i-->
+            .
+            .
+        {% endfor %}
+    {% endif %}
+    ```
