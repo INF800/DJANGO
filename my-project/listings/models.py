@@ -11,6 +11,7 @@ class Listings(models.Model):
     # field = models.ForeignKey(other-model-we-are-relating, on_delete=)
     # If you have realator attached to a listing, and you delete realator, should the listing delete too? In some cases we want it to. Here, Not needed
     realator = models.ForeignKey(Realator, on_delete=models.DO_NOTHING)
+    title =  models.CharField(max_length=200)
     address = models.CharField(max_length=200)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
@@ -37,5 +38,5 @@ class Listings(models.Model):
 
     # In admin area, we will have a table that diplays each listing. And we need
     # to pick main field to be displayed there. "Tile" can be selected as main field to display.
-    def __str__():
+    def __str__(self):
         return self.title

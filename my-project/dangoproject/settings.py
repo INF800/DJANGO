@@ -130,3 +130,8 @@ STATICFILES_DIRS = [
     # location of static folder we just created in djangoproject/
     os.path.join(BASE_DIR, 'dangoproject/static')
 ]
+
+# Media Folder Settings
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

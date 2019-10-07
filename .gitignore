@@ -171,3 +171,4 @@ dmypy.json
 
 venv
 /my-project/static
+/my-project/media

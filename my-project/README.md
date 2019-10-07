@@ -846,3 +846,58 @@ class Realator(models.Model):
     ```
 - You can add data now with GUI
 - We can obviously customize admin area UI and colors before giving it to customer
+
+# Work on admin area - Media folder and adding data
+
+- Define MEDIA folder where images will be uploaded
+
+settings.py
+```
+# very bottom
+
+# Media Folder Settings
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/
+```
+
+- add `+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)` to `urlpatterns` in 
+
+dangoproject/urls.py
+```
+from django.contrib import admin
+from django.urls import path, include
+
+# impoorts for settimg media folder
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/', include('listings.urls')),
+    path('admin/', admin.site.urls),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+```
+
+*All set! Do these above two things to set up media folder correctly*
+
+- Upload all 3 Realators details now
+
+**Note**: 
+
+After uploading Kyle Brown's info, we see 'Kyle Brown' below `Realators` in the admin area because of the below `__str__` func. In listings as well, we will see 'Kyle Brown' option available in `Realators` field because of this.
+
+Realators/models.py/Realator
+```
+    def __str__(self):
+        return self.name
+```
+
+- Upload all Listings details now
+
+**NOTE:** `media` folder created itself when we uploaded photos
+
+**MOMENT OF APPRECIATION:** If you were to upload all this by code, it would have taken a lot of time. Django makes it easy. Esp, admin area. Note there is an add button already ppresent intutively in `Listings` section. This is awesome.
+
+# Work on admin area - Customisation

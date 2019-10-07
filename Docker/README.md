@@ -1,4 +1,4 @@
-# 01. Install and setup docke
+# 01. Install and setup docker
 
 In command prompt, `docker` command should work
 
