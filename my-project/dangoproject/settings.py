@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.humanize',
     'pages.apps.PagesConfig',
     'listings.apps.ListingsConfig',
     'realators.apps.RealatorsConfig',

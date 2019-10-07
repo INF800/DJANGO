@@ -1139,7 +1139,7 @@ Realators/models.py/Realator
     
     left-click on the table you wnat to view and select `View/Edit data`. This will let you see all the data that was added
     
-    **Pull data from Listings Model**
+- Pull data from Listings Model
     - open `listings/views.py`
     - we are going to fetch listings using our Listings model and insert in template. Then we can simply loop through them
     - For MVC related view rendering, we pass values using dictionary
@@ -1218,7 +1218,7 @@ Realators/models.py/Realator
     ```
     <!-- check if we have 'listings' in db in first place and passed to context ditionary -->
     {% if listings %}
-        {% for linsting in listings %}
+        {% for listing in listings %}
         .
         .
         .
@@ -1228,3 +1228,86 @@ Realators/models.py/Realator
         <p>No listings available</p>
     {% endif %}
     ```
+    ***see commited `templates/listings/listings.html` file for commit "Fetching db model and looping over it done."**
+
+- Display data in templates dynamically using `{{ }}`
+    
+    - You can output title and all in loop using `{{ listing.tite }}` *check the names from `models.py` if you haave forgotten feild names.*
+    -  Django makes it alot to work with images. Simply use `{{ listing.photo_main.url }}` instead of whole static `src` link. But put inside `" "`. 
+    - for `{{ listing.price }}`, comas wont be displayed. For that add an app in `settings.py` and load in in html file. It is already available but not laoded by default.
+
+    settings.py:
+    ```
+    INSTALLED_APPS = [
+        'django.contrib.humanize',
+    ```
+    templates/listings/listings.html
+    ```
+    {% extends 'base.html' %}
+    {% load humanize %}
+    .
+    .
+        {{ listing.price | intcomma }}
+    .
+    .
+    ```
+
+    You can use it for alot more. Checkout https://docs.djangoproject.com/en/2.2/ref/contrib/humanize/
+
+    - As we have a relationship for `realator` feild, because of `__str__` function in `Realator` classs, realator `name` will be dissplayed by `{{ listing.realator }}`
+    - You can use humanize `timesince` for `2 days ago` kind of output
+    ```
+    {{ listing.list_date | timesince }}
+    ```
+    - when we click on `more info`, it should go to THAT listing details page. We already defined route for it in `listings/urls.py`
+    ```
+    path('<int:listing_id>', views.listing, name='about')
+    ```
+    change `name='about'` to `name='listing'` 
+    ```
+    path('<int:listing_id>', views.listing, name='listing')
+    ```
+
+    so, you can use (*Note how we used id*)
+    ```
+    href=" {% url 'listing' listing.id %} " 
+    ```
+    instead of href in :
+    ```
+    <a href="listing.html" class="btn btn-primary btn-block">More Info</a>
+    ```
+    When passing an id parameter like this, we also have to alter 
+    ```
+    def listing(request):
+        return render(request, 'listings/listing.html')
+    ```
+    from`listings/view.py`
+    ```
+    from django.shortcuts import render
+
+    # import listing model for fetching
+    from .models import Listings
+
+    def index(request):
+        # This will fetch all listings without any raw sql queries
+        listings = Listings.objects.all()
+
+        context = {
+            'listings': listings
+        }
+
+        return render(request, 'listings/listings.html', context)
+
+    def listing(request):
+        return render(request, 'listings/listing.html')
+
+    def search(request):
+        return render(request, 'listings/search.html')
+    ```
+    to
+    ```
+    def listing(request, listing_id):
+        return render(request, 'listings/listing.html')
+    ```
+
+    

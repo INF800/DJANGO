@@ -8,7 +8,7 @@ urlpatterns = [
     path('', views.index, name='listings'),
 
     # parameter for single listing eg. 'listings/23'
-    path('<int:listing_id>', views.listing, name='about'),
+    path('<int:listing_id>', views.listing, name='listing'),
 
     # search. 
     # url must be 'listings/search'
