@@ -1130,3 +1130,101 @@ Realators/models.py/Realator
     admin.site.register(Realator, RealatorAdmin)
     ```
 
+# Front End - Fetch from database
+
+- Fetching data from db and displaying in html\
+
+    You can see all the added data using `pgadmin`
+    > servers->dbserver->Databases->dangoproject->schemas->public->tables
+    
+    left-click on the table you wnat to view and select `View/Edit data`. This will let you see all the data that was added
+    
+    **Pull data from Listings Model**
+    - open `listings/views.py`
+    - we are going to fetch listings using our Listings model and insert in template. Then we can simply loop through them
+    - For MVC related view rendering, we pass values using dictionary
+
+    example,
+    ```
+    def index(request):
+        return render(request, 'listings/listings.html', {
+            'name': 'Brad'
+        })   
+    ```
+    In `templates/listings/listings.html` we use `{{  }}` to render dictionary values
+    ```
+    <h1 class="display-4">Browse Our Properties {{ name }} </h1>
+    ```
+    
+    - Instead of passing dictionary directly, we will pass a dictionary variable
+    ```
+    def index(request):
+
+        context = {
+            'name': 'Brad'
+        }
+
+        return render(request, 'listings/listings.html', context})
+    ```
+
+    - Let's import data from model. 
+    
+    *For better error detection, we need to install package `pip install pylint-django`* 
+
+    *Then in Visual Studio Code goto: User Settings (Ctrl + , or File > Preferences > Settings if available ) Put in the following (please note the curly braces which are required for custom user settings in VSC):*
+    ```
+    {"python.linting.pylintArgs": [
+        "--load-plugins=pylint_django"
+    ],}
+    ```
+    - Let's import data from model.
+
+    listings/views.py:
+    ```
+    from django.shortcuts import render
+
+    # import listing model for fetching
+    from .models import Listings
+
+    def index(request):
+        # This will fetch all listings without any raw sql queries
+        listings = Listings.objects.all()
+
+        context = {
+            'listings': listings
+        }
+
+        return render(request, 'listings/listings.html', context)
+
+    def listing(request):
+        return render(request, 'listings/listing.html')
+
+    def search(request):
+        return render(request, 'listings/search.html')
+    ```
+    if you render `{{listings}}` in html output will be
+    ```
+    <QuerySet [
+        <Listings: 45 Drivewood Circle>, 
+        <Listings: 18 Jefferson Lane>, 
+        <Listings: 187 Woodrow Street>, 
+        <Listings: 28 Gifford Street>, 
+        <Listings: 12 United Road>, 
+        <Listings: 22 Essex Circle>
+        ]>
+    ```
+
+    - Now, Loop it all in your html page for each listing. for example:
+    ```
+    <!-- check if we have 'listings' in db in first place and passed to context ditionary -->
+    {% if listings %}
+        {% for linsting in listings %}
+        .
+        .
+        .
+        .
+        {% endfor %}
+    {% else %}
+        <p>No listings available</p>
+    {% endif %}
+    ```
