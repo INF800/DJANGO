@@ -6,13 +6,20 @@ from listings.models import Listings
 #import realators nodel
 from realators.models import Realator
 
+#import dictionaries from choices.py
+from listings.choices import price_choices, bedroom_choices, state_choices
+
+
 # index view (called by urls)
 def index(request):
     
     # [:3] allows fetches only 3 listings from db
     listings = Listings.objects.order_by('-list_date').filter(is_published=True)[:3]
     context = {
-        'listings': listings
+        'listings': listings,
+        'state_choices': state_choices,
+        'bedroom_choices': bedroom_choices,
+        'price_choices': price_choices
     }
 
     return render(request, 'pages/index.html', context)

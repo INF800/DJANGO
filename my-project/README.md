@@ -1791,4 +1791,252 @@ Realators/models.py/Realator
 
     - `Enquiry form` not yet done in single listing page
 
-# Front End - Search at Home page 
+# Front End - Search at Home page
+
+- Seach from choices 
+
+- But first let's shorten the template by using loops and dictionaries for repetitive code
+    
+    - We will create dicts and import them and loop through
+    - Create a file `choices.py` inside `listings` app because it has to do with listings. Not `pages` app just because it is in Home page
+    
+    listings/choices.py
+    ```
+    bedroom_choices = {
+        '1':1,
+        '2':2,
+        '3':3,
+        '4':4,
+        '5':5,
+        '6':6,
+        '7':7,
+        '8':8,
+        '9':9,
+        '10': 0
+    }
+
+    price_choices = {
+        '100000': '$100,000',
+        '200000': '$200,000',
+        '300000': '$300,000',
+        '400000': '$400,000',
+        '500000': '$500,000',
+        '600000': '$600,000',
+        '700000': '$700,000',
+        '800000': '$800,000',
+        '900000': '$900,000',
+        '1000000': '$1M+'
+        }
+
+    state_choices = {
+        'AL': 'Alabama',
+        'AK': 'Alaska',
+        'AZ': 'Arizona',
+        'AR': 'Arkansas',
+        'CA': 'California',
+        'CO': 'Colorado',
+        'CT': 'Connecticut',
+        'DE': 'Delaware',
+        'DC': 'District Of Columbia',
+        'FL': 'Florida',
+        'GA': 'Georgia',
+        'HI': 'Hawaii',
+        'ID': 'Idaho',
+        'IL': 'Illinois',
+        'IN': 'Indiana',
+        'IA': 'Iowa',
+        'KS': 'Kansas',
+        'KY': 'Kentucky',
+        'LA': 'Louisiana',
+        'ME': 'Maine',
+        'MD': 'Maryland',
+        'MA': 'Massachusetts',
+        'MI': 'Michigan',
+        'MN': 'Minnesota',
+        'MS': 'Mississippi',
+        'MO': 'Missouri',
+        'MT': 'Montana',
+        'NE': 'Nebraska',
+        'NV': 'Nevada',
+        'NH': 'New Hampshire',
+        'NJ': 'New Jersey',
+        'NM': 'New Mexico',
+        'NY': 'New York',
+        'NC': 'North Carolina',
+        'ND': 'North Dakota',
+        'OH': 'Ohio',
+        'OK': 'Oklahoma',
+        'OR': 'Oregon',
+        'PA': 'Pennsylvania',
+        'RI': 'Rhode Island',
+        'SC': 'South Carolina',
+        'SD': 'South Dakota',
+        'TN': 'Tennessee',
+        'TX': 'Texas',
+        'UT': 'Utah',
+        'VT': 'Vermont',
+        'VA': 'Virginia',
+        'WA': 'Washington',
+        'WV': 'West Virginia',
+        'WI': 'Wisconsin',
+        'WY': 'Wyoming'
+        }
+    ```
+    *You may copy and change all occurances for fast copying*
+
+    - Import dictionaries and pass to templates
+
+    Note
+    ```
+    #import dictionaries from choices.py
+    from listings.choices import price_choices, bedroom_choices, state_choices
+    ```
+    and
+    ```
+    context = {
+        'listings': listings
+        'state_choices': state_choices,
+        'bedroom_choices': bedroom_choices,
+        'price_choices': price_choices
+    }
+    ```
+    in `pages/views.py`:
+    ```
+    from django.shortcuts import render
+    from django.http import HttpResponse
+
+    #import listings model
+    from listings.models import Listings
+    #import realators nodel
+    from realators.models import Realator
+
+    #import dictionaries from choices.py
+    from listings.choices import price_choices, bedroom_choices, state_choices
+
+
+    # index view (called by urls)
+    def index(request):
+        
+        # [:3] allows fetches only 3 listings from db
+        listings = Listings.objects.order_by('-list_date').filter(is_published=True)[:3]
+        context = {
+            'listings': listings
+            'state_choices': state_choices,
+            'bedroom_choices': bedroom_choices,
+            'price_choices': price_choices
+        }
+
+        return render(request, 'pages/index.html', context)
+
+    def about(request):
+        # Get all realators
+        realators = Realator.objects.order_by('-hire_date')
+
+        # Get MVP i.e seller(s) of the month
+        mvp_realators = Realator.objects.all().filter(is_mvp=True)
+
+        context = {
+            'realators': realators,
+            'mvp_realators': mvp_realators
+        }
+
+        return render(request, 'pages/about.html', context)
+    ```
+
+    -   Access in template and loop through
+    - Note, `.items` in `state_choices.items`
+    
+    templates/pages/index.html
+    ```
+    {% for k,v in state_choices.items %}
+        <option value="{{ k }}">{{ v }}</option>
+    {% endfor %}
+    ```
+
+- Now, Handle `submit` button for search
+
+    - Note `action=""`
+    ```
+    <div class="search">
+        <form action="search.html">
+    ```
+    Replace it to
+    ```
+    <div class="search">
+        <form action="{% url 'search' %}">
+    ```
+    Note, `search` is present in `listings/urls.py` and `listings/views.py`. We are just redirecting to `templates/listings/search.html`
+
+    - when we enter keywords in `search` template in home, note that it actually will be used as get request in url
+    ```
+    http://127.0.0.1:8000/listings/search?keywords=&city=
+    ```
+
+    - Copy paste search ui template into ```templates/listings/search.html```
+    ```
+    {% extends 'base.html' %}
+    {% load humanize %}
+
+    {% block content %}
+        .
+        .
+        <!-- pate here -->
+        .
+        .
+    {% endblock %}
+    ```
+
+    **Sreach page is just like our listings page. But it will have our search results instead**
+
+    - first let's shorten the search template by using loops and dictionaries for repetitive code just as we did for home page (do same as above)
+
+- Quries for search page
+
+    - we will check if the searched field esists
+    - then pull it out of the requests
+    - put it into a variable
+    - then, make queries based on that variable (for example, filter based on that variable)
+
+    - Goto `listings/view.py/search`:
+    ```
+    def search(request):
+
+        # get all listings just like listings page
+        queryset_list = Listings.objects.order_by('-list_date')
+
+        # Now, add filters based on search
+
+        # keywords
+        if 'keywords' in request.GET:
+            keywords = request.GET['keywords']
+            if keywords:
+                queryset_list = queryset_list.filter(description__icontains=keywords)
+        
+        # city
+        if 'state' in request.GET:
+            state = request.GET['state']
+            if state:
+                queryset_list = queryset_list.filter(state__iexact=state)
+
+        # state
+        if 'city' in request.GET:
+            city = request.GET['city']
+            if city:
+                queryset_list = queryset_list.filter(city__iexact=city)
+        
+        
+        context = {
+            'state_choices': state_choices,
+            'bedroom_choices': bedroom_choices,
+            'price_choices': price_choices,
+            'listings': queryset_list
+        }
+        return render(request, 'listings/search.html', context)
+    ```
+    
+    - `description__icontains=keywords`: means not to search for exact match. But even if it is a part of the string
+    - `city__iexact=city` is case sensitive `.__iexact`
+    - `bedrooms__lte=bedrooms` is used t display 1, 2, 3 as well as 4 beedroooms when '4' is searched. "Less Than or Equalto" or "upto"
+    - remember to change `action={% url 'static' %}` for forms. Otherwise we will get GET error. Cross check if `name` tag is present as well
+    - `request.GET[' ']` lets us data from link or url requested in browser
+    - `ctrl + D` in vscode to edit (all)-next-occurances at once
