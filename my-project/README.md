@@ -2040,3 +2040,59 @@ Realators/models.py/Realator
     - remember to change `action={% url 'static' %}` for forms. Otherwise we will get GET error. Cross check if `name` tag is present as well
     - `request.GET[' ']` lets us data from link or url requested in browser
     - `ctrl + D` in vscode to edit (all)-next-occurances at once
+
+- Make our search queries stay on searrch fields in template
+    - have to edit `value` tag for `<input>` in our `listings/search.html` file
+    - edit `listings/view.py`. Pass GET request to context
+
+    `listings/view.py/search :`
+    
+    Note
+    ```
+    'values': request.GET
+    ```
+    in
+    ```
+    context = {
+        'state_choices': state_choices,
+        'bedroom_choices': bedroom_choices,
+        'price_choices': price_choices,
+        'listings': queryset_list,
+        'values': request.GET
+    }
+    ```
+
+    `listings/search.html`: add `value` in input tags
+    
+    ```
+    <input type="text" name="keywords" class="form-control" placeholder="Keyword (Pool, Garage, etc)" value="{{ values.keywords }}">
+    ```
+    
+    - For `<select>` tags, little different. Use if conditions
+
+    change this
+    ```
+    <select name="bedrooms" class="form-control">
+        <option selected="true" disabled="disabled">Bedrooms (Any)</option>
+            {% for k,v in bedroom_choices.items %}
+                <option value="{{ k }}">{{ v }}</option>
+            {% endfor %}
+    </select>
+
+    ```
+    to
+    ```
+    <select name="bedrooms" class="form-control">
+        <option selected="true" disabled="disabled">Bedrooms (Any)</option>
+        {% for k,v in bedroom_choices.items %}
+            <option value="{{ k }}"
+            
+            {% if k == values.bedrooms %}
+                selected
+            {% endif %}
+
+            >{{ v }}</option>
+        {% endfor %}
+    </select>
+    ```
+    We are adding `selected` extra based on if condition
