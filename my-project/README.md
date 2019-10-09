@@ -2096,3 +2096,56 @@ Realators/models.py/Realator
     </select>
     ```
     We are adding `selected` extra based on if condition
+
+# User account login, aauthentication
+
+- Create new app `contacts` and put it in `settings`
+```
+python manage.py startapp contacts
+```
+*New folder will appear*
+
+settings.py
+```
+INSTALLED_APPS = [
+    'contacts.apps.ContactsConfig'
+```
+
+- Create out model. First thing to do as it'll have it's own model
+- We are basically creating enquiry form for application
+
+
+contacts/models.py
+```
+from django.db import models
+from datetime import datetime
+
+class Contact(models.Model):
+    listing = models.CharField(max_length=200)
+    listing_id = models.ImageField()
+    name = models.CharField(max_length=200)
+    email = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100)
+    name = models.TextField(blank=True)
+    contact_date = models.DateTimeField(default=datetime.now, blank=True)
+    # this has to be connected to logged in user. blank=True for non registered users
+    user_id = models.IntegerField(blank=True)
+    def __str__(self):
+        return self.name
+```
+
+- Create migration and run it
+```
+python manage.py makemigrations contacts
+```
+```
+python manage.py migrate
+```
+*May doublecheck with pgadmin*
+
+- Register `contacts` app to `admin.py` to be able to see it in admin-area
+
+contacts/admin.py
+```
+
+```
