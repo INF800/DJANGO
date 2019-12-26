@@ -5,7 +5,7 @@
 run 
 ```
 pip install virtualenv
-virtualenv venv
+python -m virtualenv your-venv-name
 ```
 in proj folder
  
