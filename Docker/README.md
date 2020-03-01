@@ -173,3 +173,8 @@ Outputs:
 `docker-compose run app sh -c "django-admin.py startproject app ."`
 
 (Creates in "WORKDIR")
+
+# Postgres setup
+
+- see eather commit `docker setup successful - django-postgres-py3.6.8`
+- For more info see `Applied-ML/Resources/04-NLP`
