@@ -94,7 +94,7 @@ Follow https://docs.docker.com/compose/django/ and test `postgres` image setup w
         #   ->  According to this `docker-compose.yml` file, `sudo docker-compose up` will set up postgres database and
         #       serve the django website.
         ```
-#### Now, Heroku Setup
+#### 02. Now, Heroku Setup
 
 - Make sure `docker-compose up` spins up entire dev environment locally
 - Follow (https://devcenter.heroku.com/articles/django-app-configuration) done below –
@@ -134,3 +134,29 @@ Follow https://docs.docker.com/compose/django/ and test `postgres` image setup w
             - check
                 - `docker-compose up`
     - Note: you can avoid all this by simply deleting the old image and building image afresh with new requirements.txt `docker build .`
+
+#### Now, PgAdmin setup
+
+To use pgadmin add
+
+```
+services:
+  test-pgadmin-compose: #docker-compose up -d
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "renatogroff@yahoo.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "PgAdmin2019!"
+    ports :
+      - "8002:80"
+    networks :
+      - postgres-compose-network
+```
+```
+networks: #docker-compose up -d
+  postgres-compose-network:
+    driver: bridge
+```
+and run `docker-compose up -d` which will fetch all images then,
+run the docker using `docker-compose up`
+
+You can see pgadmin running on port `8002`
