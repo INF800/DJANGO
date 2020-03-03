@@ -135,7 +135,7 @@ Follow https://docs.docker.com/compose/django/ and test `postgres` image setup w
                 - `docker-compose up`
     - Note: you can avoid all this by simply deleting the old image and building image afresh with new requirements.txt `docker build .`
 
-#### Now, PgAdmin setup
+#### Now, 03. PgAdmin setup
 
 To use pgadmin add
 
@@ -160,3 +160,53 @@ and run `docker-compose up -d` which will fetch all images then,
 run the docker using `docker-compose up`
 
 You can see pgadmin running on port `8002`
+
+#### Note:
+
+- See the *yml* code carefully for `depends_on:` `networks:` 
+- In Pgadmin, 
+    - while creating a server, 
+    - in Connection->Hostname/service->
+        - Give `service:` mentioned in your *yml* file. Don't forget to setup your `depends_on` and `networks:`
+        -  here, instead of giving `localhost` give `db`
+```
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432" 
+    networks:
+      - postgres-compose-network    
+
+  test-pgadmin-compose: #docker-compose up -d
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "rakeshark22@gmail.com" #"renatogroff@yahoo.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "Momanddad0!" #"PgAdmin2019!"
+    ports:
+      - "8002:80"
+    networks: #added
+      - postgres-compose-network
+
+  web: # sudo docker-compose run web python manage.py shell
+    restart: always
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000 # add to `django->appname->settings.py->ALLOWED_HOSTS = ["0.0.0.0"]` 
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on: #added
+      - db
+    networks: #added
+    - postgres-compose-network
+
+networks : #docker-compose up -d
+  postgres-compose-network :
+    driver : bridge
+```
