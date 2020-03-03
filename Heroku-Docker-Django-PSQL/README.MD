@@ -162,7 +162,7 @@ run the docker using `docker-compose up`
 You can see pgadmin running on port `8002`
 
 #### Note:
-
+- (https://medium.com/@renato.groffe/postgresql-pgadmin-4-docker-compose-montando-rapidamente-um-ambiente-para-uso-55a2ab230b89)
 - See the *yml* code carefully for `depends_on:` `networks:` 
 - In Pgadmin, 
     - while creating a server, 
